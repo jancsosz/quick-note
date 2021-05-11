@@ -1,6 +1,7 @@
 package user;
 
 import jpa.GenericJpaDao;
+import user.model.User;
 
 import java.util.List;
 

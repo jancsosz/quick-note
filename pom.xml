@@ -82,9 +82,9 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>8.0.15</version>
+            <groupId>com.oracle</groupId>
+            <artifactId>ojdbc14</artifactId>
+            <version>10.2.0.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -220,9 +220,9 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
-        <!--<filters>
+        <filters>
             <filter>db.properties</filter>
-        </filters>-->
+        </filters>
     </build>
     <reporting>
         <plugins>

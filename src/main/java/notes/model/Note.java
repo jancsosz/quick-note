@@ -1,5 +1,6 @@
-package notes;
+package notes.model;
 
+import javafx.beans.property.SimpleStringProperty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,6 +10,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -31,7 +33,7 @@ public class Note {
     private Long id;
 
     @Column(nullable = false)
-    private Long userFk;
+    private String user_fk;
 
     @Column(nullable = false)
     private String comment;
@@ -39,6 +41,6 @@ public class Note {
     @Column(nullable = false)
     private Priority priority;
 
-    @Column()
-    private Date commentedAt;
+    @Column(nullable = false)
+    private LocalDate created;
 }

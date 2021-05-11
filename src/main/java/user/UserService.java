@@ -1,24 +1,33 @@
 package user;
 
-import org.slf4j.Logger;
+import user.model.User;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.List;
 import java.util.Optional;
-import java.util.logging.LogManager;
 
 public class UserService {
 
     // private static Logger logger = new LogManager().getLogger();
-    private EntityManager em;
+    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("oracle-unit");
+    private EntityManager em = emf.createEntityManager();
     private UserService(EntityManager em) {
         this.em = em;
     }
 
-    public User create(Long id, String username, String password) {
-        User user = new User (id, username, password);
-        em.persist(user);
+    public User createUser(Long id, String username, String password) {
+        User user = new User (username, password);
+        this.em.persist(user);
         return user;
+    }
+
+    public Optional<User> auth(String username, String password) {
+        this.em.find(User.class, username);
+        this.em.find(User.class, password);
+
+        return Optional.empty();
     }
 
 //    public Optional<User> findUser(String username, String password) {
