@@ -10,6 +10,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import user.UserDAO;
+import user.model.User;
 
 import java.io.IOException;
 
@@ -17,10 +19,10 @@ import java.io.IOException;
 public class LoginController {
 
     @FXML
-    private TextField username;
+    private TextField usernameTextField;
 
     @FXML
-    private TextField password;
+    private TextField passwordTextField;
 
     @FXML
     private Label usernameError;
@@ -28,31 +30,38 @@ public class LoginController {
     @FXML
     private Label passwordError;
 
+    private User user;
+    private UserDAO userManager;
+
     public void login(ActionEvent actionEvent) throws IOException {
         usernameError.setText("");
         passwordError.setText("");
 
-        if (password.getText().isEmpty() || username.getText().isEmpty()) {
-            if (password.getText().isEmpty()) {
+        if (passwordTextField.getText().isEmpty() || usernameTextField.getText().isEmpty()) {
+            if (passwordTextField.getText().isEmpty()) {
                 passwordError.setText("Password is required.");
             }
-            if (username.getText().isEmpty()) {
+            if (usernameTextField.getText().isEmpty()) {
                 usernameError.setText("Username is required.");
             }
         } else {
+            // TODO: user data query
+            /*user = User.builder()
+                    .username(usernameTextField.getText())
+                    .password(passwordTextField.getText())
+                    .build();
+
+            userManager.find(user);*/
+
             FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/app-ui.fxml"));
             Parent root = fxmlLoader.load();
-            fxmlLoader.<AppController>getController().initdata(username.getText(), password.getText());
+            fxmlLoader.<AppController>getController().initdata(user);
             Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
             stage.setResizable(false);
             stage.setTitle("QuickNotes");
             stage.show();
-            log.info("Username is set to {}, loading game scene.", username.getText());
+            log.info("Username is set to {}, loading game scene.", usernameTextField.getText());
         }
-
-        // TODO: user data query
-
-
     }
 }

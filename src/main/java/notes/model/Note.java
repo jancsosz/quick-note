@@ -1,17 +1,15 @@
 package notes.model;
 
 import javafx.beans.property.SimpleStringProperty;
+import jpa.PriorityConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import priority.Priority;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -20,27 +18,32 @@ import java.util.Date;
 @Entity
 public class Note {
 
-    public enum Priority {
-        VERY_LOW,
-        LOW,
-        NORMAL,
-        HIGH,
-        VERY_HIGH
-    }
-
     @Id
     @GeneratedValue
     private Long id;
 
+    /**
+     * User's username who created the note.
+     */
     @Column(nullable = false)
-    private String user_fk;
+    private String userFk;
 
+    /**
+     * The actual value of the note.
+     */
     @Column(nullable = false)
     private String comment;
 
+    /**
+     * Priority of note.
+     */
     @Column(nullable = false)
+    @Convert(converter = PriorityConverter.class)
     private Priority priority;
 
+    /**
+     * Timestamp when note was saved.
+     */
     @Column(nullable = false)
     private LocalDate created;
 }

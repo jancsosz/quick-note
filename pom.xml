@@ -51,12 +51,12 @@
             <version>3.0.1-b11</version>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>1.4.199</version>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -85,6 +85,7 @@
             <groupId>com.oracle</groupId>
             <artifactId>ojdbc14</artifactId>
             <version>10.2.0.3.0</version>
+            <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
