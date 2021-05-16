@@ -1,10 +1,12 @@
 package user;
 
 import jpa.GenericJpaDao;
+import lombok.extern.slf4j.Slf4j;
 import user.model.User;
 
 import javax.persistence.Persistence;
 
+@Slf4j
 public class UserDAO extends GenericJpaDao<User> {
 
     private static UserDAO instance;
@@ -13,17 +15,19 @@ public class UserDAO extends GenericJpaDao<User> {
         super(entityClass);
     }
 
-    public UserDAO getInstance() {
+    public static UserDAO getInstance() {
         if (instance == null) {
             instance = new UserDAO(User.class);
-            instance.setEntityManager(Persistence.createEntityManagerFactory("oracle-unit").createEntityManager());
+            instance.setEntityManager(Persistence.createEntityManagerFactory("mysql-unit").createEntityManager());
         }
+        log.info("Connected to db.");
         return instance;
     }
 
     // TODO: user authentikacio bekotes
-//    public User auth() {
-//        return entityManager.createQuery("select u from User u where username=u.username and password=u.password", User.class)
-//                .getSingleResult();
-//    }
+    public User auth(User user) {
+        String auth_query = "SELECT u from User u where u.username=" + user.getUsername() + " and u.password=" + user.getPassword();
+        return entityManager.createQuery(auth_query, User.class)
+                .getSingleResult();
+    }
 }

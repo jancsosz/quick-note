@@ -16,7 +16,7 @@ public class NoteDAO extends GenericJpaDao<Note> {
     public static NoteDAO getInstance() {
         if (instance == null) {
             instance = new NoteDAO(Note.class);
-            instance.setEntityManager(Persistence.createEntityManagerFactory("oracle-unit").createEntityManager());
+            instance.setEntityManager(Persistence.createEntityManagerFactory("mysql-unit").createEntityManager());
         }
         return instance;
     }

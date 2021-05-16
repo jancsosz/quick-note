@@ -11,7 +11,19 @@
             <property name="javax.persistence.jdbc.password" value="${db.password}" />
             <property name="javax.persistence.jdbc.driver" value="${db.driver}" />
             <property name="hibernate.hbm2ddl.auto" value="update"/>
-            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle8iDialect"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.Oracle12cDialect"/>
+        </properties>
+    </persistence-unit>
+
+    <persistence-unit name="mysql-unit" transaction-type="RESOURCE_LOCAL">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://remotemysql.com:3306/EKAezQKWXz" />
+            <property name="javax.persistence.jdbc.user" value="EKAezQKWXz" />
+            <property name="javax.persistence.jdbc.password" value="1Py6b6ojWA" />
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.cj.jdbc.Driver" />
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL8Dialect"/>
         </properties>
     </persistence-unit>
 

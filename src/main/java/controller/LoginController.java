@@ -7,6 +7,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
@@ -14,6 +15,7 @@ import user.UserDAO;
 import user.model.User;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 public class LoginController {
@@ -22,7 +24,7 @@ public class LoginController {
     private TextField usernameTextField;
 
     @FXML
-    private TextField passwordTextField;
+    private PasswordField passwordTextField;
 
     @FXML
     private Label usernameError;
@@ -30,8 +32,10 @@ public class LoginController {
     @FXML
     private Label passwordError;
 
-    private User user;
-    private UserDAO userManager;
+    @FXML
+    private Label loginErrorLabel;
+
+    private UserDAO userManager = UserDAO.getInstance();
 
     public void login(ActionEvent actionEvent) throws IOException {
         usernameError.setText("");
@@ -46,22 +50,38 @@ public class LoginController {
             }
         } else {
             // TODO: user data query
-            /*user = User.builder()
+            User user = User.builder()
                     .username(usernameTextField.getText())
                     .password(passwordTextField.getText())
                     .build();
 
-            userManager.find(user);*/
+            log.info("Built user: {}", user);
+            List<User> registeredUsers;
+            registeredUsers = userManager.findAll();
+            System.out.println(registeredUsers.get(0));
 
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/app-ui.fxml"));
-            Parent root = fxmlLoader.load();
-            fxmlLoader.<AppController>getController().initdata(user);
-            Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(root));
-            stage.setResizable(false);
-            stage.setTitle("QuickNotes");
-            stage.show();
-            log.info("Username is set to {}, loading game scene.", usernameTextField.getText());
+            boolean found = false;
+            for (User u: registeredUsers) {
+                if (u.getUsername().equals(usernameTextField.getText()) && u.getPassword().equals(passwordTextField.getText())) {
+                    found = true;
+                }
+            }
+
+            if (found) {
+                FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/app-ui.fxml"));
+                Parent root = fxmlLoader.load();
+                fxmlLoader.<AppController>getController().initdata(user);
+                Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+                stage.setScene(new Scene(root));
+                stage.setResizable(false);
+                stage.setTitle("QuickNotes");
+                stage.show();
+                log.info("Found user {}, loading app scene.", usernameTextField.getText());
+            } else {
+                this.loginErrorLabel.setText("No user with this username password combination");
+            }
+
+
         }
     }
 }
