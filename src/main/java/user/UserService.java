@@ -17,7 +17,7 @@ public class UserService {
      * Function for user authentication.
      * @param username username input
      * @param password password input
-     * @return <code>true<code/> if user was found <code>false<code/> if not
+     * @return true if user was found false if not
      */
     public boolean auth(String username, String password) {
         UserDAO userManager = UserDAO.getInstance();

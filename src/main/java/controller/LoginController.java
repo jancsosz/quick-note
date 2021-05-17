@@ -39,7 +39,7 @@ public class LoginController {
     /**
      * Method, controlling login process.
      * @param actionEvent ActionEvent object to get the window for AppController.
-     * @throws IOException
+     * @throws IOException needed for fxmlLoader.load()
      */
     public void login(ActionEvent actionEvent) throws IOException {
         usernameError.setText("");
