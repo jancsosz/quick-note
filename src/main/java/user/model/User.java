@@ -9,6 +9,9 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+/**
+ * Entity class for User objects, used for authentication.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

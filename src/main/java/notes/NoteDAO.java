@@ -5,6 +5,9 @@ import notes.model.Note;
 
 import javax.persistence.Persistence;
 
+/**
+ * Data Access Object for Note Entities.
+ */
 public class NoteDAO extends GenericJpaDao<Note> {
 
     private static NoteDAO instance;

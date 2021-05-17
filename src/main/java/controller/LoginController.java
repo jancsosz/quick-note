@@ -11,12 +11,13 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
-import user.UserDAO;
-import user.model.User;
+import user.UserService;
 
 import java.io.IOException;
-import java.util.List;
 
+/**
+ * Controller class for user authentication stage.
+ */
 @Slf4j
 public class LoginController {
 
@@ -35,8 +36,11 @@ public class LoginController {
     @FXML
     private Label loginErrorLabel;
 
-    private UserDAO userManager = UserDAO.getInstance();
-
+    /**
+     * Method, controlling login process.
+     * @param actionEvent ActionEvent object to get the window for AppController.
+     * @throws IOException
+     */
     public void login(ActionEvent actionEvent) throws IOException {
         usernameError.setText("");
         passwordError.setText("");
@@ -49,34 +53,18 @@ public class LoginController {
                 usernameError.setText("Username is required.");
             }
         } else {
-            // TODO: user data query
-            User user = User.builder()
-                    .username(usernameTextField.getText())
-                    .password(passwordTextField.getText())
-                    .build();
+            UserService userService = new UserService();
+            if (userService.auth(usernameTextField.getText(), passwordTextField.getText())) {
+                log.info("Found user {}, loading app scene.", usernameTextField.getText());
 
-            log.info("Built user: {}", user);
-            List<User> registeredUsers;
-            registeredUsers = userManager.findAll();
-            System.out.println(registeredUsers.get(0));
-
-            boolean found = false;
-            for (User u: registeredUsers) {
-                if (u.getUsername().equals(usernameTextField.getText()) && u.getPassword().equals(passwordTextField.getText())) {
-                    found = true;
-                }
-            }
-
-            if (found) {
                 FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/app-ui.fxml"));
                 Parent root = fxmlLoader.load();
-                fxmlLoader.<AppController>getController().initdata(user);
+                fxmlLoader.<AppController>getController().initdata(userService.getUser());
                 Stage stage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
                 stage.setScene(new Scene(root));
                 stage.setResizable(false);
                 stage.setTitle("QuickNotes");
                 stage.show();
-                log.info("Found user {}, loading app scene.", usernameTextField.getText());
             } else {
                 this.loginErrorLabel.setText("No user with this username password combination");
             }

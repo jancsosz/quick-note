@@ -1,6 +1,5 @@
 package notes.model;
 
-import javafx.beans.property.SimpleStringProperty;
 import jpa.PriorityConverter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,6 +10,10 @@ import priority.Priority;
 import javax.persistence.*;
 import java.time.LocalDate;
 
+
+/**
+ * Entity class to represent Note objects.
+ */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +32,7 @@ public class Note {
     private String userFk;
 
     /**
-     * The actual value of the note.
+     * Description of note.
      */
     @Column(nullable = false)
     private String comment;
@@ -42,7 +45,7 @@ public class Note {
     private Priority priority;
 
     /**
-     * Timestamp when note was saved.
+     * Timestamp when note was created.
      */
     @Column(nullable = false)
     private LocalDate created;

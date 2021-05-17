@@ -6,6 +6,9 @@ import user.model.User;
 
 import javax.persistence.Persistence;
 
+/**
+ * Data Access Object for User Entities.
+ */
 @Slf4j
 public class UserDAO extends GenericJpaDao<User> {
 
@@ -20,14 +23,8 @@ public class UserDAO extends GenericJpaDao<User> {
             instance = new UserDAO(User.class);
             instance.setEntityManager(Persistence.createEntityManagerFactory("mysql-unit").createEntityManager());
         }
-        log.info("Connected to db.");
-        return instance;
-    }
+        log.info("Connected to User table.");
 
-    // TODO: user authentikacio bekotes
-    public User auth(User user) {
-        String auth_query = "SELECT u from User u where u.username=" + user.getUsername() + " and u.password=" + user.getPassword();
-        return entityManager.createQuery(auth_query, User.class)
-                .getSingleResult();
+        return instance;
     }
 }

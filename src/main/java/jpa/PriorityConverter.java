@@ -4,6 +4,10 @@ import priority.Priority;
 
 import javax.persistence.AttributeConverter;
 
+
+/**
+ * Converter class for Note Entity class' Priority enum.
+ */
 public class PriorityConverter implements AttributeConverter<Priority, String> {
 
     @Override

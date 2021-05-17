@@ -1,40 +1,43 @@
 package user;
 
+import lombok.Data;
 import user.model.User;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.util.List;
-import java.util.Optional;
 
+/**
+ * Service class for User data handling at login.
+ */
+@Data
 public class UserService {
 
-    // private static Logger logger = new LogManager().getLogger();
-    private EntityManagerFactory emf = Persistence.createEntityManagerFactory("oracle-unit");
-    private EntityManager em = emf.createEntityManager();
-    private UserService(EntityManager em) {
-        this.em = em;
-    }
+    private User user;
 
-    public User createUser(Long id, String username, String password) {
-        User user = new User (username, password);
-        this.em.persist(user);
-        return user;
-    }
+    /**
+     * Function for user authentication.
+     * @param username username input
+     * @param password password input
+     * @return <code>true<code/> if user was found <code>false<code/> if not
+     */
+    public boolean auth(String username, String password) {
+        UserDAO userManager = UserDAO.getInstance();
 
-    public Optional<User> auth(String username, String password) {
-        this.em.find(User.class, username);
-        this.em.find(User.class, password);
+        this.user = User.builder()
+                .username(username)
+                .password(password)
+                .build();
 
-        return Optional.empty();
-    }
+        List<User> registeredUsers;
+        registeredUsers = userManager.findAll();
 
-//    public Optional<User> findUser(String username, String password) {
-//        return Optional.ofNullable(em.find(User.class, username, password));
-//    }
+        boolean found = false;
+        for (User u: registeredUsers) {
+            if (u.getUsername().equals(this.user.getUsername()) && u.getPassword().equals(this.user.getPassword())) {
+                found = true;
+                break;
+            }
+        }
 
-    public List<User> findAllUsers() {
-        return em.createQuery("SELECT u FROM User u ORDER BY u.username", User.class).getResultList();
+        return found;
     }
 }

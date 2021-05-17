@@ -1,11 +1,10 @@
 package notes.model;
 
 import javafx.beans.property.SimpleStringProperty;
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
-@NoArgsConstructor
+/**
+ * Template class for displayable format of Note objects.
+ */
 public class NoteToView {
     private Long id;
     private SimpleStringProperty userFk;
@@ -19,6 +18,10 @@ public class NoteToView {
         this.comment = new SimpleStringProperty(comment);
         this.priority = new SimpleStringProperty(priority);
         this.created = new SimpleStringProperty(created);
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public void setUserFk(String userFk) {
@@ -37,6 +40,10 @@ public class NoteToView {
         this.created.set(created);
     }
 
+    public Long getId() {
+        return id;
+    }
+
     public String getUserFk() {
         return userFk.get();
     }
@@ -51,14 +58,6 @@ public class NoteToView {
 
     public String getCreated() {
         return created.get();
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Long getId() {
-        return id;
     }
 
     @Override
