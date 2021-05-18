@@ -75,8 +75,27 @@ public class AppController implements Initializable {
     public void initdata(User loggedInUser) {
         this.loggedInUser = loggedInUser;
 
-        noteManager = NoteDAO.getInstance();
         this.noteService = new NoteService();
+
+        getAllNotes();
+
+        this.selectPriority.getItems().addAll(
+                noteService.getPriorityToDisplay(Priority.VERY_LOW),
+                noteService.getPriorityToDisplay(Priority.LOW),
+                noteService.getPriorityToDisplay(Priority.NORMAL),
+                noteService.getPriorityToDisplay(Priority.HIGH),
+                noteService.getPriorityToDisplay(Priority.VERY_HIGH)
+        );
+    }
+
+    /**
+     * Reloads table source lists with value gotten from DB.
+     */
+    private void getAllNotes() {
+        noteManager = NoteDAO.getInstance();
+
+        this.allNotesToViewList.clear();
+        this.myNotesToViewList.clear();
 
         List<Note> notes = noteManager.findAll();
         for (Note note: notes) {
@@ -86,14 +105,7 @@ public class AppController implements Initializable {
                 this.myNotesToViewList.add(noteService.createNoteToViewFromNote(note));
             }
         }
-
-        this.selectPriority.getItems().addAll(
-                noteService.getPriorityToDisplay(Priority.VERY_LOW),
-                noteService.getPriorityToDisplay(Priority.LOW),
-                noteService.getPriorityToDisplay(Priority.NORMAL),
-                noteService.getPriorityToDisplay(Priority.HIGH),
-                noteService.getPriorityToDisplay(Priority.VERY_HIGH)
-        );
+        log.info("Reloaded datasource");
     }
 
     /**
@@ -137,6 +149,7 @@ public class AppController implements Initializable {
                                     note.setComment(changedNote.getComment());
 
                                     this.noteManager.update(note);
+                                    getAllNotes();
                                     log.info("Updated note's description: {}", note);
                                     break;
                                 }
@@ -185,13 +198,14 @@ public class AppController implements Initializable {
     public void addNote() {
         if (!this.noteField.getText().equals("") && this.selectPriority.getValue() != null){
             NoteToView newNote = new NoteToView(null, this.loggedInUser.getUsername(), this.noteField.getText(), this.selectPriority.getValue(), LocalDate.now().toString());
-            this.allNotesToViewList.add(newNote);
 
             this.noteService = new NoteService();
             this.noteManager = NoteDAO.getInstance();
 
             Note newNoteToDb = noteService.createNoteFromNoteToView(newNote);
             this.noteManager.persist(newNoteToDb);
+
+            getAllNotes();
 
             this.noteErrorLabel.setText("");
             this.priorityErrorLabel.setText("");
