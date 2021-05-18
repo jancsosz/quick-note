@@ -13,6 +13,7 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.layout.Pane;
 import lombok.extern.slf4j.Slf4j;
 import notes.NoteDAO;
+import notes.NoteService;
 import notes.model.Note;
 import notes.model.NoteToView;
 import priority.Priority;
@@ -28,7 +29,6 @@ import java.util.ResourceBundle;
  */
 @Slf4j
 public class AppController implements Initializable {
-    private User loggedInUser;
 
     @FXML
     private TableView<NoteToView> allNotesTable;
@@ -57,7 +57,12 @@ public class AppController implements Initializable {
     @FXML
     private ComboBox<String> selectPriority = new ComboBox<>();
 
-    private NoteDAO noteManager = NoteDAO.getInstance();
+
+    private NoteService noteService;
+
+    private User loggedInUser;
+
+    private NoteDAO noteManager;
 
     private ObservableList<NoteToView> allNotesToViewList = FXCollections.observableArrayList();
 
@@ -70,20 +75,24 @@ public class AppController implements Initializable {
     public void initdata(User loggedInUser) {
         this.loggedInUser = loggedInUser;
 
+        noteManager = NoteDAO.getInstance();
+        this.noteService = new NoteService();
+
         List<Note> notes = noteManager.findAll();
         for (Note note: notes) {
-            this.allNotesToViewList.add(createNoteToViewFromNote(note));
+            this.allNotesToViewList.add(noteService.createNoteToViewFromNote(note));
+
             if (note.getUserFk().equals(this.loggedInUser.getUsername())) {
-                this.myNotesToViewList.add(createNoteToViewFromNote(note));
+                this.myNotesToViewList.add(noteService.createNoteToViewFromNote(note));
             }
         }
 
         this.selectPriority.getItems().addAll(
-                getPriorityToDisplay(Priority.VERY_LOW),
-                getPriorityToDisplay(Priority.LOW),
-                getPriorityToDisplay(Priority.NORMAL),
-                getPriorityToDisplay(Priority.HIGH),
-                getPriorityToDisplay(Priority.VERY_HIGH)
+                noteService.getPriorityToDisplay(Priority.VERY_LOW),
+                noteService.getPriorityToDisplay(Priority.LOW),
+                noteService.getPriorityToDisplay(Priority.NORMAL),
+                noteService.getPriorityToDisplay(Priority.HIGH),
+                noteService.getPriorityToDisplay(Priority.VERY_HIGH)
         );
     }
 
@@ -103,7 +112,7 @@ public class AppController implements Initializable {
 
 
         TableColumn noteCol = new TableColumn("Note");
-        // noteCol.setMinWidth(70);
+
         noteCol.setPrefWidth(150);
 
         noteCol.setCellFactory(TextFieldTableCell.forTableColumn());
@@ -119,10 +128,12 @@ public class AppController implements Initializable {
                         if (!changedNote.getComment().equals(cellEditEvent.getNewValue())) {
                             changedNote.setComment(cellEditEvent.getNewValue());
 
+                            this.noteManager = NoteDAO.getInstance();
+
                             List<Note> notes = this.noteManager.findAll();
 
                             for (Note note: notes) {
-                                if (note.getId() == changedNote.getId()){
+                                if (note.getId().equals(changedNote.getId())){
                                     note.setComment(changedNote.getComment());
 
                                     this.noteManager.update(note);
@@ -135,35 +146,13 @@ public class AppController implements Initializable {
             );
         }
 
+
         TableColumn priorityCol = new TableColumn("Priority");
         priorityCol.setMinWidth(70);
 
         priorityCol.setCellFactory(TextFieldTableCell.forTableColumn());
         priorityCol.setCellValueFactory(new PropertyValueFactory<NoteToView, String>("priority"));
 
-        /*if (myNotes) {
-            priorityCol.setOnEditCommit(
-                    (EventHandler<TableColumn.CellEditEvent<NoteToView, String>>) cellEditEvent -> {
-                        NoteToView changedNote = ((NoteToView) cellEditEvent.getTableView().getItems().get(
-                                cellEditEvent.getTablePosition().getRow()
-                        ));
-
-                        changedNote.setComment(cellEditEvent.getNewValue());
-
-                        List<Note> notes = this.noteManager.findAll();
-
-                        for (Note note: notes) {
-                            if (note.getId() == changedNote.getId()){
-                                note.setPriority(changedNote.getPriority());
-
-                                this.noteManager.update(note);
-                                log.info("Updated note's description: {}", note);
-                                break;
-                            }
-                        }
-                    }
-            );
-        }*/
 
         TableColumn createdCol = new TableColumn("At");
         createdCol.setMinWidth(70);
@@ -181,75 +170,10 @@ public class AppController implements Initializable {
         tableToInit.setItems(initData);
     }
 
-    /**
-     * Creates a displayable NoteToView object from a Note object.
-     * @param note Note object to convert.
-     * @return Created NoteToView object.
-     */
-    private NoteToView createNoteToViewFromNote(Note note) {
-        return new NoteToView(note.getId(), note.getUserFk(), note.getComment(), getPriorityToDisplay(note.getPriority()), note.getCreated().toString());
-    }
-
-    /**
-     * Creates a Note object from a displayed NoteToView object for data transfer.
-     * @param noteToView displayed NoteToView object.
-     * @return Entity Note object.
-     */
-    private Note createNoteFromNoteToView(NoteToView noteToView) {
-        return new Note(noteToView.getId(), this.loggedInUser.getUsername(), this.noteField.getText(), getPriorityToPersist(noteToView.getPriority()), LocalDate.now());
-
-    }
-
-    /**
-     * Creates displayable priorities based on the Enum.
-     * @param priority Priority Enum object. (from DB)
-     * @return a String based on the priority.
-     */
-    private String getPriorityToDisplay(Priority priority) {
-        switch(priority) {
-            case VERY_LOW:
-                return "Very low priority";
-            case LOW:
-                return "Low priority";
-            case NORMAL:
-                return "Normal priority";
-            case HIGH:
-                return "High priority";
-            case VERY_HIGH:
-                return "Very high priority";
-            default:
-                throw new IllegalArgumentException("Bad priority");
-        }
-    }
-
-    /**
-     * Converts displayed String value of priority into Priority enum.
-     * @param displayedPriority String to convert.
-     * @return Priority Enum.
-     */
-    private Priority getPriorityToPersist(String displayedPriority) {
-        switch (displayedPriority) {
-            case "Very low priority":
-                return Priority.VERY_LOW;
-            case "Low priority":
-                return Priority.LOW;
-            case "Normal priority":
-                return Priority.NORMAL;
-            case "High priority":
-                return Priority.HIGH;
-            case "Very high priority":
-                return Priority.VERY_HIGH;
-            default:
-                throw new IllegalArgumentException("Unrecognized priority string");
-        }
-    }
-
     @Override
      public void initialize(URL url, ResourceBundle rb) {
          initTable(this.allNotesTable, this.allNotesToViewList, false);
          initTable(this.myNotesTable, this.myNotesToViewList, true);
-
-         System.out.println(this.selectPriority.getValue());
 
          log.info("Initialized tables");
      }
@@ -263,7 +187,10 @@ public class AppController implements Initializable {
             NoteToView newNote = new NoteToView(null, this.loggedInUser.getUsername(), this.noteField.getText(), this.selectPriority.getValue(), LocalDate.now().toString());
             this.allNotesToViewList.add(newNote);
 
-            Note newNoteToDb = createNoteFromNoteToView(newNote);
+            this.noteService = new NoteService();
+            this.noteManager = NoteDAO.getInstance();
+
+            Note newNoteToDb = noteService.createNoteFromNoteToView(newNote);
             this.noteManager.persist(newNoteToDb);
 
             this.noteErrorLabel.setText("");
