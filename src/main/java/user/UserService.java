@@ -1,6 +1,7 @@
 package user;
 
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import user.model.User;
 
 import java.util.List;
@@ -8,10 +9,12 @@ import java.util.List;
 /**
  * Service class for User data handling at login.
  */
+@Slf4j
 @Data
 public class UserService {
 
     private User user;
+    private UserDAO userManager;
 
     /**
      * Function for user authentication.
@@ -20,7 +23,7 @@ public class UserService {
      * @return true if user was found false if not
      */
     public boolean auth(String username, String password) {
-        UserDAO userManager = UserDAO.getInstance();
+        this.userManager = UserDAO.getInstance();
 
         this.user = User.builder()
                 .username(username)
@@ -36,6 +39,12 @@ public class UserService {
                 found = true;
                 break;
             }
+        }
+
+        if (found) {
+            log.info("Successful authentication");
+        }else {
+            log.info("Unsuccessful authentication");
         }
 
         return found;

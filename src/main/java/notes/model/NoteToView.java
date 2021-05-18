@@ -7,9 +7,18 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class NoteToView {
     private Long id;
+
     private SimpleStringProperty userFk;
     private SimpleStringProperty comment;
+
+    /**
+     * Representing dynamic displayable format of Note entity class' priority enum property.
+     */
     private SimpleStringProperty priority;
+
+    /**
+     * Representing dynamic displayable format of Note entity class' created property.
+     */
     private SimpleStringProperty created;
 
     public NoteToView(Long id, String userFk, String comment, String priority, String created) {

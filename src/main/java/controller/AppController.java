@@ -69,7 +69,7 @@ public class AppController implements Initializable {
     private ObservableList<NoteToView> myNotesToViewList = FXCollections.observableArrayList();
 
     /**
-     * Called from LoginController, inits data based on loggedInUser
+     * Called from LoginController, inits data based on loggedInUser.
      * @param loggedInUser User object, which successfully passed the authentication.
      */
     public void initdata(User loggedInUser) {
